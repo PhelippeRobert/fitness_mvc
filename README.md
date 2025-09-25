@@ -18,9 +18,6 @@ Este é um sistema desenvolvido em **PHP** utilizando o padrão **MVC**, com ban
 │── service/
 └── view/
 
-pgsql
-Copiar código
-
 ## ⚙️ Banco de Dados
 Crie o banco no **phpMyAdmin**:
 
@@ -63,19 +60,15 @@ Inicie Apache e MySQL no XAMPP
 Crie o banco e as tabelas no phpMyAdmin
 
 Acesse no navegador:
-
-arduino
-Copiar código
 http://localhost/fitness_mvc/
+
 👨‍💻 Equipe
-Seu nome / RA
+Phelippe Robert Miranda Da Silva / RA:5160520
+Arthur Cruz Oliveira / RA:5161008
 
-Curso: Sistemas de Informação ou ADS
+Curso: ANÁLISE E DESENVOLVIMENTO DE SISTEMAS (ADS)
 
-Disciplina: Aplicações para Internet M1
-
-yaml
-Copiar código
+Disciplina: Aplicações para Internet
 
 ---
 
@@ -90,4 +83,3 @@ Se você já tem o repositório configurado no VS Code:
    git commit -m "Atualiza README com instruções de instalação e uso"
    git push origin main
 (se sua branch for master, troque main por master).
-
