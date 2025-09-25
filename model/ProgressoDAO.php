@@ -9,6 +9,20 @@ class ProgressoDAO {
         return $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function buscarPorId($id) {
+    $conn = Database::getConnection();
+    $stmt = $conn->prepare("
+        SELECT p.id, p.progresso, u.nome AS usuario, d.nome AS desafio
+        FROM progresso p
+        JOIN usuarios u ON p.usuario_id = u.id
+        JOIN desafios d ON p.desafio_id = d.id
+        WHERE p.id = :id
+    ");
+    $stmt->execute([":id" => $id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+
     public function atualizar($id, $progresso) {
         $conn = Database::getConnection();
         $stmt = $conn->prepare("UPDATE progresso SET progresso = :progresso WHERE id = :id");

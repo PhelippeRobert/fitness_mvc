@@ -40,4 +40,4 @@
     <button type="submit">Salvar</button>
 </form>
 
-<a href="<?= BASE_URL ?>/usuarios/listar">Voltar</a>
+<a href="<?= BASE_URL ?>/menu.php">Voltar</a>

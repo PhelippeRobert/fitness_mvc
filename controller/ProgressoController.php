@@ -16,18 +16,27 @@ class ProgressoController {
     }
 
     public function atualizar() {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $this->service->atualizar($_POST["id"], $_POST["progresso"]);
-            header("Location: /progresso/listar");
-            exit;
-        }
-        include __DIR__ . '/../view/progresso/atualizar.php';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $this->service->atualizar($_POST['id'], $_POST['progresso']);
+        header("Location: " . BASE_URL . "/progresso/listar");
+        exit;
     }
+
+    if (isset($_GET['id'])) {
+        $id = $_GET['id'];
+        $progressoAtual = $this->service->buscarPorId($id);  // ✅ busca no banco
+    } else {
+        $progressoAtual = null;
+    }
+
+    include __DIR__ . '/../view/progresso/atualizar.php';
+}
+
 
     public function criar() {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $this->service->criar($_POST["usuario_id"], $_POST["desafio_id"], $_POST["progresso"]);
-            header("Location: /progresso/listar");
+            header("Location: " . BASE_URL . "/progresso/listar");
             exit;
         }
     }

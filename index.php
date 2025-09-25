@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/generic/Autoload.php';
+require_once __DIR__ . '/config.php';   // ✅ adiciona isso
 
 $param = $_GET['param'] ?? 'usuarios/listar';
 list($controllerName, $action) = explode('/', $param);

@@ -11,7 +11,7 @@ class UsuarioController {
     public function criar() {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $this->service->criar($_POST["nome"], $_POST["email"]);
-            header("Location: /usuarios/listar");
+            header("Location: " . BASE_URL . "/usuarios/listar");
             exit;
         }
         include __DIR__ . '/../view/usuarios/criar.php';
@@ -20,7 +20,7 @@ class UsuarioController {
     public function editar() {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $this->service->editar($_POST["id"], $_POST["nome"], $_POST["email"]);
-            header("Location: /usuarios/listar");
+            header("Location: " . BASE_URL . "/usuarios/listar");
             exit;
         }
         // Para melhorar: buscar dados atuais para prefilling (se houver id)
@@ -38,7 +38,7 @@ class UsuarioController {
             if ($id) {
                 $this->service->excluir($id);
             }
-            header("Location: /usuarios/listar");
+            header("Location: " . BASE_URL . "/usuarios/listar");
             exit;
         }
 

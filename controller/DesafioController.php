@@ -11,7 +11,7 @@ class DesafioController {
     public function criar() {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $this->service->criar($_POST["nome"], $_POST["descricao"]);
-            header("Location: /desafios/listar");
+            header("Location: " . BASE_URL . "/desafios/listar");
             exit;
         }
         include __DIR__ . '/../view/desafios/criar.php';
@@ -20,7 +20,7 @@ class DesafioController {
     public function editar() {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $this->service->editar($_POST["id"], $_POST["nome"], $_POST["descricao"]);
-            header("Location: /desafios/listar");
+            header("Location: " . BASE_URL . "/desafios/listar");
             exit;
         }
         $desafioAtual = null;
@@ -36,7 +36,7 @@ class DesafioController {
             if ($id) {
                 $this->service->excluir($id);
             }
-            header("Location: /desafios/listar");
+            header("Location: " . BASE_URL . "/desafios/listar");
             exit;
         }
 

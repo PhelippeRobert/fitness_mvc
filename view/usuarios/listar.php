@@ -9,3 +9,4 @@
     </li>
 <?php endforeach; ?>
 </ul>
+<a href="<?= BASE_URL ?>/menu.php">Voltar</a>
