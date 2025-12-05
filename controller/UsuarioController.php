@@ -1,52 +1,113 @@
 <?php
+
 class UsuarioController {
+
     private $service;
-    public function __construct() { $this->service = new UsuarioService(); }
 
-    public function listar() {
-        $usuarios = $this->service->listar();
-        include __DIR__ . '/../view/usuarios/listar.php';
+    public function __construct() {
+        $this->service = new UsuarioService();
+        header("Content-Type: application/json; charset=utf-8");
     }
 
-    public function criar() {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $this->service->criar($_POST["nome"], $_POST["email"]);
-            header("Location: " . BASE_URL . "/usuarios/listar");
-            exit;
+    // Método principal chamado pelo index.php
+    public function handleRequest($method, $id = null) {
+
+        switch ($method) {
+
+            case "GET":
+                if ($id) {
+                    $this->buscar($id);
+                } else {
+                    $this->listar();
+                }
+                break;
+
+            case "POST":
+                $this->criar();
+                break;
+
+            case "PUT":
+                if ($id) {
+                    $this->atualizar($id);
+                } else {
+                    echo json_encode(["erro" => "ID obrigatório para atualização"]);
+                }
+                break;
+
+            case "DELETE":
+                if ($id) {
+                    $this->excluir($id);
+                } else {
+                    echo json_encode(["erro" => "ID obrigatório para exclusão"]);
+                }
+                break;
+
+            default:
+                echo json_encode(["erro" => "Método não suportado"]);
         }
-        include __DIR__ . '/../view/usuarios/criar.php';
     }
 
-    public function editar() {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $this->service->editar($_POST["id"], $_POST["nome"], $_POST["email"]);
-            header("Location: " . BASE_URL . "/usuarios/listar");
-            exit;
-        }
-        // Para melhorar: buscar dados atuais para prefilling (se houver id)
-        $usuarioAtual = null;
-        if (isset($_GET["id"])) {
-            $usuarioAtual = $this->service->buscarPorId($_GET["id"]);
-        }
-        include __DIR__ . '/../view/usuarios/editar.php';
+    // GET /usuarios
+    private function listar() {
+        $dados = $this->service->listar();
+        echo json_encode($dados);
     }
 
-    public function excluir() {
-        // POST: executa exclusão
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $id = $_POST["id"] ?? null;
-            if ($id) {
-                $this->service->excluir($id);
-            }
-            header("Location: " . BASE_URL . "/usuarios/listar");
-            exit;
+    // GET /usuarios/{id}
+    private function buscar($id) {
+        $usuario = $this->service->buscarPorId($id);
+
+        if ($usuario) {
+            echo json_encode($usuario);
+        } else {
+            echo json_encode(["erro" => "Usuário não encontrado"]);
+        }
+    }
+
+    // POST /usuarios
+    private function criar() {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (!isset($data["nome"], $data["email"], $data["senha"])) {
+            echo json_encode(["erro" => "Nome, email e senha são obrigatórios"]);
+            return;
         }
 
-        // GET: mostra página de confirmação
-        $usuario = null;
-        if (isset($_GET["id"])) {
-            $usuario = $this->service->buscarPorId($_GET["id"]);
+        $id = $this->service->criar($data["nome"], $data["email"], $data["senha"]);
+
+        echo json_encode([
+            "mensagem" => "Usuário criado com sucesso",
+            "id" => $id
+        ]);
+    }
+
+    // PUT /usuarios/{id}
+    private function atualizar($id) {
+
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (!isset($data["nome"], $data["email"])) {
+            echo json_encode(["erro" => "Nome e email são obrigatórios"]);
+            return;
         }
-        include __DIR__ . '/../view/usuarios/excluir.php';
+
+        $resultado = $this->service->atualizar($id, $data["nome"], $data["email"]);
+
+        if ($resultado) {
+            echo json_encode(["mensagem" => "Usuário atualizado"]);
+        } else {
+            echo json_encode(["erro" => "Erro ao atualizar usuário"]);
+        }
+    }
+
+    // DELETE /usuarios/{id}
+    private function excluir($id) {
+        $resultado = $this->service->excluir($id);
+
+        if ($resultado) {
+            echo json_encode(["mensagem" => "Usuário excluído"]);
+        } else {
+            echo json_encode(["erro" => "Erro ao excluir usuário"]);
+        }
     }
 }

@@ -1,0 +1,15 @@
+id   nome      email             senha
+1    Phelippe  Phill@gmail.com   12345
+2    Arthur    Arthur@gmail.com  678910
+
+
+{
+  "email": "Phill@gmail.com",
+  "senha": "12345"
+}
+
+
+{
+  "nome": "Supino",
+  "descricao": "Levantar supino"
+}

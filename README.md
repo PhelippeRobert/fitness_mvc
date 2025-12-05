@@ -8,15 +8,34 @@ Este é um sistema desenvolvido em **PHP** utilizando o padrão **MVC**, com ban
 - CRUD de **Progresso** (registrar e atualizar o progresso dos usuários nos desafios)
 
 ## 📂 Estrutura de Pastas
-/fitness_mvc
-│── index.php
-│── config.php
-│── .htaccess
+/fitness_api
+│── index.php              
+│── .htaccess               
+│
+│── config/
+│     └── Database.php      
+│
 │── generic/
+│     ├── Autoload.php
+│     ├── JWTHelper.php     
+│     └── AuthMiddleware.php 
+│
 │── controller/
-│── model/
+│     ├── UsuarioController.php
+│     ├── DesafioController.php
+│     ├── ProgressoController.php
+│     └── LoginController.php
+│
 │── service/
-└── view/
+│     ├── UsuarioService.php
+│     ├── DesafioService.php
+│     └── ProgressoService.php
+│
+└── dao/
+      ├── UsuarioDAO.php
+      ├── DesafioDAO.php
+      └── ProgressoDAO.php
+
 
 ## ⚙️ Banco de Dados
 Crie o banco no **phpMyAdmin**:

@@ -1,49 +1,64 @@
 <?php
+
 class DesafioController {
     private $service;
-    public function __construct() { $this->service = new DesafioService(); }
 
-    public function listar() {
-        $desafios = $this->service->listar();
-        include __DIR__ . '/../view/desafios/listar.php';
+    public function __construct() {
+        $this->service = new DesafioService();
+        header("Content-Type: application/json; charset=utf-8");
     }
 
-    public function criar() {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $this->service->criar($_POST["nome"], $_POST["descricao"]);
-            header("Location: " . BASE_URL . "/desafios/listar");
-            exit;
+    public function handleRequest($method, $id) {
+        switch ($method) {
+            case "GET":
+                if ($id) {
+                    $this->buscar($id);
+                } else {
+                    $this->listar();
+                }
+                break;
+
+            case "POST":
+                $this->criar();
+                break;
+
+            case "PUT":
+                $this->editar($id);
+                break;
+
+            case "DELETE":
+                $this->excluir($id);
+                break;
+
+            default:
+                echo json_encode(["erro" => "Método inválido"]);
         }
-        include __DIR__ . '/../view/desafios/criar.php';
     }
 
-    public function editar() {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $this->service->editar($_POST["id"], $_POST["nome"], $_POST["descricao"]);
-            header("Location: " . BASE_URL . "/desafios/listar");
-            exit;
-        }
-        $desafioAtual = null;
-        if (isset($_GET["id"])) {
-            $desafioAtual = $this->service->buscarPorId($_GET["id"]);
-        }
-        include __DIR__ . '/../view/desafios/editar.php';
+    private function listar() {
+        $dados = $this->service->listar();
+        echo json_encode($dados);
     }
 
-    public function excluir() {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $id = $_POST["id"] ?? null;
-            if ($id) {
-                $this->service->excluir($id);
-            }
-            header("Location: " . BASE_URL . "/desafios/listar");
-            exit;
-        }
+    private function buscar($id) {
+        $dados = $this->service->buscarPorId($id);
+        echo json_encode($dados);
+    }
 
-        $desafio = null;
-        if (isset($_GET["id"])) {
-            $desafio = $this->service->buscarPorId($_GET["id"]);
-        }
-        include __DIR__ . '/../view/desafios/excluir.php';
+    private function criar() {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $this->service->criar($data["nome"], $data["descricao"]);
+        echo json_encode(["mensagem" => "Desafio criado"]);
+    }
+
+    private function editar($id) {
+        $data = json_decode(file_get_contents("php://input"), true);
+        $this->service->editar($id, $data["nome"], $data["descricao"]);
+        echo json_encode(["mensagem" => "Desafio editado"]);
+    }
+
+    private function excluir($id) {
+        $this->service->excluir($id);
+        echo json_encode(["mensagem" => "Desafio excluído"]);
     }
 }

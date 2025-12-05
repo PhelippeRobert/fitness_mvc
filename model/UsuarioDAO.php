@@ -1,32 +1,70 @@
 <?php
+
 class UsuarioDAO {
-    public function listar() {
-        $conn = Database::getConnection();
-        return $conn->query("SELECT * FROM usuarios")->fetchAll(PDO::FETCH_ASSOC);
+    private $conn;
+    private $table = "usuarios";
+
+    public function __construct() {
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
-    public function buscarPorId($id) {
-        $conn = Database::getConnection();
-        $stmt = $conn->prepare("SELECT * FROM usuarios WHERE id = :id");
-        $stmt->execute([":id" => $id]);
+    public function findAll() {
+        $sql = "SELECT * FROM {$this->table}";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findById($id) {
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id);
+        $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function criar($nome, $email) {
-        $conn = Database::getConnection();
-        $stmt = $conn->prepare("INSERT INTO usuarios (nome, email) VALUES (:nome, :email)");
-        return $stmt->execute([":nome" => $nome, ":email" => $email]);
+    public function create($data) {
+        $sql = "INSERT INTO {$this->table} (nome, email) VALUES (:nome, :email)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":nome", $data["nome"]);
+        $stmt->bindValue(":email", $data["email"]);
+        $stmt->execute();
+        return $this->conn->lastInsertId();
     }
 
-    public function editar($id, $nome, $email) {
-        $conn = Database::getConnection();
-        $stmt = $conn->prepare("UPDATE usuarios SET nome = :nome, email = :email WHERE id = :id");
-        return $stmt->execute([":id" => $id, ":nome" => $nome, ":email" => $email]);
+    public function update($id, $data) {
+        $sql = "UPDATE {$this->table} SET nome = :nome, email = :email WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":nome", $data["nome"]);
+        $stmt->bindValue(":email", $data["email"]);
+        $stmt->bindValue(":id", $id);
+
+        return $stmt->execute();
     }
 
-    public function excluir($id) {
-        $conn = Database::getConnection();
-        $stmt = $conn->prepare("DELETE FROM usuarios WHERE id = :id");
-        return $stmt->execute([":id" => $id]);
+    public function delete($id) {
+        $sql = "DELETE FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id);
+        return $stmt->execute();
+    }
+
+public function buscarPorEmailSenha($email, $senha) {
+
+
+    
+    try {
+        $sql = "SELECT * FROM usuarios WHERE email = :email AND senha = :senha";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":email", $email);
+        $stmt->bindValue(":senha", $senha);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        return null;
     }
 }
+}
+

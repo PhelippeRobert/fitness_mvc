@@ -1,43 +1,82 @@
 <?php
+
 class ProgressoController {
     private $service;
-    public function __construct() { $this->service = new ProgressoService(); }
 
-    public function listar() {
-        $progresso = $this->service->listar();
-
-        // buscar listas para popular selects no formulário de criação
-        $usuarioService = new UsuarioService();
-        $desafioService = new DesafioService();
-        $usuarios = $usuarioService->listar();
-        $desafios = $desafioService->listar();
-
-        include __DIR__ . '/../view/progresso/listar.php';
+    public function __construct() {
+        $this->service = new ProgressoService();
+        header("Content-Type: application/json; charset=utf-8");
     }
 
-    public function atualizar() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $this->service->atualizar($_POST['id'], $_POST['progresso']);
-        header("Location: " . BASE_URL . "/progresso/listar");
-        exit;
-    }
+    public function handleRequest($method, $id) {
+        switch ($method) {
 
-    if (isset($_GET['id'])) {
-        $id = $_GET['id'];
-        $progressoAtual = $this->service->buscarPorId($id);  // ✅ busca no banco
-    } else {
-        $progressoAtual = null;
-    }
+            case "GET":
+                if ($id) {
+                    $this->buscar($id);
+                } else {
+                    $this->listar();
+                }
+                break;
 
-    include __DIR__ . '/../view/progresso/atualizar.php';
-}
+            case "POST":
+                $this->criar();
+                break;
 
+            case "PUT":
+                $this->atualizar($id);
+                break;
 
-    public function criar() {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $this->service->criar($_POST["usuario_id"], $_POST["desafio_id"], $_POST["progresso"]);
-            header("Location: " . BASE_URL . "/progresso/listar");
-            exit;
+            case "DELETE":
+                $this->excluir($id);
+                break;
+
+            default:
+                echo json_encode(["erro" => "Método não suportado"]);
         }
+    }
+
+    private function listar() {
+        $dados = $this->service->listar();
+        echo json_encode($dados);
+    }
+
+    private function buscar($id) {
+        $dados = $this->service->buscarPorId($id);
+        echo json_encode($dados);
+    }
+
+    private function criar() {
+        $json = json_decode(file_get_contents("php://input"), true);
+
+        if (!isset($json["usuario_id"], $json["desafio_id"], $json["progresso"])) {
+            echo json_encode(["erro" => "Campos obrigatórios não enviados"]);
+            return;
+        }
+
+        $this->service->criar(
+            $json["usuario_id"],
+            $json["desafio_id"],
+            $json["progresso"]
+        );
+
+        echo json_encode(["mensagem" => "Progresso registrado com sucesso"]);
+    }
+
+    private function atualizar($id) {
+        $json = json_decode(file_get_contents("php://input"), true);
+
+        if (!isset($json["progresso"])) {
+            echo json_encode(["erro" => "Campo progresso é obrigatório"]);
+            return;
+        }
+
+        $this->service->atualizar($id, $json["progresso"]);
+        echo json_encode(["mensagem" => "Progresso atualizado"]);
+    }
+
+    private function excluir($id) {
+        $this->service->excluir($id);
+        echo json_encode(["mensagem" => "Progresso excluído"]);
     }
 }
